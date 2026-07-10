@@ -19,7 +19,13 @@ const app = express();
 app.use(cors({
   origin: function (origin, callback) {
     if (!origin) return callback(null, true);
-    if (/^http:\/\/localhost(:\d+)?$/.test(origin) || /^http:\/\/127\.0\.0\.1(:\d+)?$/.test(origin)) {
+    
+    // Check if origin matches localhost, vercel.app domains, or the configured FRONTEND_URL
+    const isLocal = /^http:\/\/localhost(:\d+)?$/.test(origin) || /^http:\/\/127\.0\.0\.1(:\d+)?$/.test(origin);
+    const isVercel = /\.vercel\.app$/.test(origin);
+    const isFrontendUrl = process.env.FRONTEND_URL && (origin === process.env.FRONTEND_URL || origin === process.env.FRONTEND_URL.replace(/\/$/, ''));
+    
+    if (isLocal || isVercel || isFrontendUrl) {
       return callback(null, true);
     }
     return callback(new Error('CORS policy mismatch'), false);
