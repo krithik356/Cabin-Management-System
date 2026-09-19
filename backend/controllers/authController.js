@@ -98,7 +98,12 @@ exports.protect = catchAsync(async (req, res, next) => {
   }
 
   // 2) Verify token
-  const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key-change-in-production');
+  let decoded;
+  try {
+    decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key-change-in-production');
+  } catch (err) {
+    return next(new AppError('Invalid or expired token. Please log in again.', 401));
+  }
 
   // 3) Check if admin still exists
   const currentAdmin = await Admin.findById(decoded.id);
