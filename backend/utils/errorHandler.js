@@ -41,8 +41,9 @@ const errorHandler = (err, req, res, next) => {
     });
   }
 
-  // Programming or unknown errors
-  console.error('ERROR 💥', err);
+  // Programming or unknown errors — log full details for debugging
+  console.error('ERROR 💥', err.name, err.message);
+  console.error('Stack:', err.stack);
   return res.status(500).json({
     status: 'error',
     message: 'Something went wrong!',
